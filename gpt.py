@@ -56,37 +56,89 @@ def estimate_loss():
     return out
 
 
-class Head(nn.Module):
-    def __init__(self, head_size):
+# class Head(nn.Module):
+#     def __init__(self, head_size):
+#         super().__init__()
+#         self.key = nn.Linear(n_embd, head_size, bias=False)
+#         self.query = nn.Linear(n_embd, head_size, bias=False)
+#         self.value = nn.Linear(n_embd, head_size, bias=False)
+#         self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
+#         self.dropout = nn.Dropout(dropout)
+
+#     def forward(self, x):
+#         B, T, C = x.shape
+#         k = self.key(x)
+#         q = self.query(x)
+#         wei = q @ k.transpose(-2, -1) * k.shape[-1] ** -0.5
+#         wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
+#         wei = F.softmax(wei, dim=-1)
+#         wei = self.dropout(wei)
+#         v = self.value(x)
+#         out = wei @ v
+#         return out
+
+
+# class MultiHeadAttention(nn.Module):
+#     def __init__(self, num_heads, head_size):
+#         super().__init__()
+#         self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
+#         self.proj = nn.Linear(head_size * num_heads, n_embd)
+#         self.dropout = nn.Dropout(dropout)
+
+#     def forward(self, x):
+#         out = torch.cat([h(x) for h in self.heads], dim=-1)
+#         out = self.dropout(self.proj(out))
+#         return out
+
+
+class MultiHeadSelfAttention(nn.Module):
+    def __init__(self, num_heads, head_size, n_embd, dropout=0.1, block_size=128):
         super().__init__()
-        self.key = nn.Linear(n_embd, head_size, bias=False)
-        self.query = nn.Linear(n_embd, head_size, bias=False)
-        self.value = nn.Linear(n_embd, head_size, bias=False)
-        self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
+        self.num_heads = num_heads
+        self.head_size = head_size
+        self.n_embd = n_embd
+
+        self.key = nn.Linear(n_embd, num_heads * head_size, bias=False)
+        self.query = nn.Linear(n_embd, num_heads * head_size, bias=False)
+        self.value = nn.Linear(n_embd, num_heads * head_size, bias=False)
+        self.proj = nn.Linear(num_heads * head_size, n_embd)
         self.dropout = nn.Dropout(dropout)
+
+        self.register_buffer("tril", torch.tril(torch.ones(block_size, block_size)))
 
     def forward(self, x):
         B, T, C = x.shape
-        k = self.key(x)
-        q = self.query(x)
-        wei = q @ k.transpose(-2, -1) * k.shape[-1] ** -0.5
-        wei = wei.masked_fill(self.tril[:T, :T] == 0, float("-inf"))
-        wei = F.softmax(wei, dim=-1)
+
+        k = self.key(x).view(
+            B, T, self.num_heads, self.head_size
+        )  # (B, T, num_heads, head_size)
+        q = self.query(x).view(
+            B, T, self.num_heads, self.head_size
+        )  # (B, T, num_heads, head_size)
+        v = self.value(x).view(
+            B, T, self.num_heads, self.head_size
+        )  # (B, T, num_heads, head_size)
+
+        # Transpose to get (B, num_heads, T, head_size)
+        k = k.transpose(1, 2)  # (B, num_heads, T, head_size)
+        q = q.transpose(1, 2)  # (B, num_heads, T, head_size)
+        v = v.transpose(1, 2)  # (B, num_heads, T, head_size)
+
+        wei = q @ k.transpose(-2, -1) * self.head_size**-0.5  # (B, num_heads, T, T)
+        wei = wei.masked_fill(
+            self.tril[:T, :T] == 0, float("-inf")
+        )  # (B, num_heads, T, T)
+        wei = F.softmax(wei, dim=-1)  # (B, num_heads, T, T)
         wei = self.dropout(wei)
-        v = self.value(x)
-        out = wei @ v
-        return out
 
+        out = (
+            wei @ v
+        )  # (B, num_heads, T, T) @ (B, num_heads, T, head_size) --> (B, num_heads, T, head_size)
 
-class MultiHeadAttention(nn.Module):
-    def __init__(self, num_heads, head_size):
-        super().__init__()
-        self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
-        self.proj = nn.Linear(head_size * num_heads, n_embd)
-        self.dropout = nn.Dropout(dropout)
+        out = (
+            out.transpose(1, 2).contiguous().view(B, T, self.num_heads * self.head_size)
+        )
 
-    def forward(self, x):
-        out = torch.cat([h(x) for h in self.heads], dim=-1)
         out = self.dropout(self.proj(out))
         return out
 
@@ -109,7 +161,8 @@ class Block(nn.Module):
     def __init__(self, n_embd, n_head):
         super().__init__()
         head_size = n_embd // n_head
-        self.sa = MultiHeadAttention(n_head, head_size)
+        # self.sa = MultiHeadAttention(n_head, head_size)
+        self.sa = MultiHeadSelfAttention(n_head, head_size, n_embd)
         self.ffwd = FeedFoward(n_embd)
         self.ln1 = nn.LayerNorm(n_embd)
         self.ln2 = nn.LayerNorm(n_embd)
