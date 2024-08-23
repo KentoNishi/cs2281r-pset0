@@ -93,7 +93,9 @@ def estimate_loss():
 
 # CUSTOM: Parallelized Multi-Head Self-Attention
 class MultiHeadSelfAttention(nn.Module):
-    def __init__(self, num_heads, head_size, n_embd, dropout=0.1, block_size=128):
+    def __init__(
+        self, num_heads, head_size, n_embd, dropout=dropout, block_size=block_size
+    ):
         super().__init__()
         self.num_heads = num_heads
         self.head_size = head_size
