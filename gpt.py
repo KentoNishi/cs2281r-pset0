@@ -91,6 +91,7 @@ def estimate_loss():
 #         return out
 
 
+# CUSTOM: Parallelized Multi-Head Self-Attention
 class MultiHeadSelfAttention(nn.Module):
     def __init__(self, num_heads, head_size, n_embd, dropout=0.1, block_size=128):
         super().__init__()
@@ -183,6 +184,10 @@ class GPTLanguageModel(nn.Module):
         )
         self.ln_f = nn.LayerNorm(n_embd)
         self.lm_head = nn.Linear(n_embd, vocab_size)
+
+        # CUSTOM: Weight Tying between Token Embedding and LM Head
+        self.lm_head.weight = self.token_embedding_table.weight
+
         self.apply(self._init_weights)
 
     def _init_weights(self, module):
