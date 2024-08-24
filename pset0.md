@@ -1,10 +1,3 @@
----
-header-includes:
-- \hypersetup{colorlinks=false,
-            allbordercolors={0 0 0},
-            pdfborderstyle={/S/U/W 1}}
----
-
 # cs2281r-pset0
 
 **Name:** Kento Nishi
