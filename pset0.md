@@ -22,7 +22,7 @@ The additional line of code can be found on Line 190 ([permalink](https://github
 
 ### Saving the Model
 
-For convenience, I saved the model and optimizer state dictionaries to a file named `model.pth`. The code can be found on Line 251 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L251)).
+For convenience, I saved the model and optimizer state dictionaries to a file named `model.pth`. The code can be found on Line 250 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L250)).
 
 ## Output
 
@@ -198,7 +198,6 @@ class MultiHeadSelfAttention(nn.Module):
             B, T, self.num_heads, self.head_size
         )  # (B, T, num_heads, head_size)
 
-        # Transpose to get (B, num_heads, T, head_size)
         k = k.transpose(1, 2)  # (B, num_heads, T, head_size)
         q = q.transpose(1, 2)  # (B, num_heads, T, head_size)
         v = v.transpose(1, 2)  # (B, num_heads, T, head_size)

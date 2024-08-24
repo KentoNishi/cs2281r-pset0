@@ -122,7 +122,6 @@ class MultiHeadSelfAttention(nn.Module):
             B, T, self.num_heads, self.head_size
         )  # (B, T, num_heads, head_size)
 
-        # Transpose to get (B, num_heads, T, head_size)
         k = k.transpose(1, 2)  # (B, num_heads, T, head_size)
         q = q.transpose(1, 2)  # (B, num_heads, T, head_size)
         v = v.transpose(1, 2)  # (B, num_heads, T, head_size)
