@@ -1,0 +1,36 @@
+10.763969 M parameters
+step 0: train loss 4.2058, val loss 4.2151
+step 500: train loss 1.8398, val loss 1.9840
+step 1000: train loss 1.4254, val loss 1.6283
+step 1500: train loss 1.2813, val loss 1.5337
+step 2000: train loss 1.2002, val loss 1.5086
+step 2500: train loss 1.1329, val loss 1.4790
+step 3000: train loss 1.0764, val loss 1.4879
+step 3500: train loss 1.0224, val loss 1.4849
+step 4000: train loss 0.9724, val loss 1.5081
+step 4500: train loss 0.9186, val loss 1.5365
+step 4999: train loss 0.8663, val loss 1.5676
+
+BRUTUS:
+O Mercutio, that any patience from the gentleman,
+So much well breathe youth and to jumet you?
+
+First Citizen:
+Fellow-man, e'er wemen welcong of our own.
+Will you do retur guiter'd? we will dispose to die,
+repent the business to the driver
+distrustipe of Rome.
+
+Second Citizen:
+He's enough.
+
+MENENIUS:
+Let the citus got he sting; he is audired
+to whip something: advance him, an't human!
+
+First Thizan:
+A noble city, a business ca: as they speak the
+withing him about us.
+
+CORIOLANUS:
+Nay, si
