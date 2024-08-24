@@ -12,5 +12,5 @@ Please read [pset0.pdf](./pset0.pdf).
 
 The PDF was generated using the following command:
 ```bash
-pandoc pset0.md -o pset0.pdf -V colorlinks=true -V urlcolor=blue
+pandoc pset0.md -o pset0.pdf -V colorlinks=true -V urlcolor=blue --filter pandoc-latex-unlisted
 ```
