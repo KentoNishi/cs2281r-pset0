@@ -18,7 +18,7 @@ My `MultiHeadSelfAttention` class can be found on Line 94 ([permalink](https://g
 
 Weight tying is a common technique in transformer models to reduce the number of parameters. The original tutorial does not implement weight tying to keep the code simple, but I added it to my implementation.
 
-The additional line of code can be found on Line 190 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L190)).
+The additional line of code can be found on Line 189 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L189)).
 
 ### Saving the Model
 
