@@ -1,3 +1,86 @@
+---
+header-includes:
+- \hypersetup{colorlinks=false,
+            allbordercolors={0 0 0},
+            pdfborderstyle={/S/U/W 1}}
+---
+
+# cs2281r-pset0
+
+**Name:** Kento Nishi
+
+**Assignment:** pset 0
+
+**Repository:** [KentoNishi/cs2281r-pset0](https://github.com/KentoNishi/cs2281r-pset0)
+
+## Implementation Deviations
+
+### Parallelized Multi-Head Self-Attention
+
+In the original tutorial, the multi-head self-attention mechanism is implemented in a concatenated list comprehension loop. This is quite inefficient, so I parallelized the computation using tensor operations. The code is based on my own fork of Andrej Karpathy's nanoGPT repository ([KentoNishi/generic-nanogpt](https://github.com/KentoNishi/generic-nanogpt)) which I created in 2023.
+
+My `MultiHeadSelfAttention` class can be found on Line 94 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L94)).
+
+### Weight Tying between Token Embedding and LM Head
+
+Weight tying is a common technique in transformer models to reduce the number of parameters. The original tutorial does not implement weight tying to keep the code simple, but I added it to my implementation.
+
+The additional line of code can be found on Line 190 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L190)).
+
+### Saving the Model
+
+For convenience, I saved the model and optimizer state dictionaries to a file named `model.pth`. The code can be found on Line 251 ([permalink](https://github.com/KentoNishi/cs2281r-pset0/blob/master/gpt.py#L251)).
+
+## Output
+
+Running `python gpt.py > output.txt` produces the following output:
+
+### `output.txt`
+
+```txt
+10.763969 M parameters
+step 0: train loss 4.2058, val loss 4.2151
+step 500: train loss 1.8398, val loss 1.9840
+step 1000: train loss 1.4254, val loss 1.6283
+step 1500: train loss 1.2813, val loss 1.5337
+step 2000: train loss 1.2002, val loss 1.5086
+step 2500: train loss 1.1329, val loss 1.4790
+step 3000: train loss 1.0764, val loss 1.4879
+step 3500: train loss 1.0224, val loss 1.4849
+step 4000: train loss 0.9724, val loss 1.5081
+step 4500: train loss 0.9186, val loss 1.5365
+step 4999: train loss 0.8663, val loss 1.5676
+
+BRUTUS:
+O Mercutio, that any patience from the gentleman,
+So much well breathe youth and to jumet you?
+
+First Citizen:
+Fellow-man, e'er wemen welcong of our own.
+Will you do retur guiter'd? we will dispose to die,
+repent the business to the driver
+distrustipe of Rome.
+
+Second Citizen:
+He's enough.
+
+MENENIUS:
+Let the citus got he sting; he is audired
+to whip something: advance him, an't human!
+
+First Thizan:
+A noble city, a business ca: as they speak the
+withing him about us.
+
+CORIOLANUS:
+Nay, si
+```
+
+## Code
+
+### `gpt.py`
+
+```{.python .numberLines .lineAnchors startFrom="1"}
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
@@ -252,3 +335,4 @@ print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
 torch.save(
     {"model": model.state_dict(), "optimizer": optimizer.state_dict()}, "model.pth"
 )
+```
